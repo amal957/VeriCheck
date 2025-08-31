@@ -71,7 +71,7 @@ Below are some screenshots of the Fake News Detection System in action:
 
 
 2. News Prediction
-    ![image](assets/VeriCheckhome.png)
+    ![image](assets/VeriCheckfakenews.png)
 
 🔧 Future Enhancements
 
