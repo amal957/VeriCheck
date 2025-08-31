@@ -66,12 +66,12 @@ The model will predict whether the news is Real or Fake.
 Below are some screenshots of the Fake News Detection System in action:
 
 1. Home Page
- ![image](https://github.com/user-attachments/assets/a5bb21d5-2875-493c-8813-9b595080f61e)
+ ![image](assets/VeriCheckhome.png)
 
 
 
 2. News Prediction
-    ![image](assets/VeriCheckHome.png)
+    ![image](assets/VeriCheckhome.png)
 
 🔧 Future Enhancements
 
