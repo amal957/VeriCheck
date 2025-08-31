@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriCheck - Real News & Fake Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tab-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input, .select-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus, .select-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .article-content {
+            padding: 20px;
+        }
+
+        .article-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .article-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .article-source {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .check-fake-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .check-fake-btn:hover {
+            background: #ff5252;
+        }
+
+        .detector-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        .text-area:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: none;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .result-box.fake {
+            background: linear-gradient(45deg, #ff6b6b, #ff5252);
+            color: white;
+        }
+
+        .result-box.real {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VeriCheck</h1>
+            <p>Stay informed with real news and detect fake content with AI</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('news')">📰 Latest News</button>
+            <button class="tab-button" onclick="switchTab('detector')">🚫 Fake News Detector</button>
+        </div>
+
+        <!-- News Tab -->
+        <div id="news-tab" class="tab-content active">
+            <div class="search-section">
+                <div class="search-form">
+                    <input type="text" id="search-query" class="search-input" placeholder="Search for news...">
+                    <select id="country-select" class="select-input">
+                        <option value="us">United States</option>
+                    </select>
+                    <select id="category-select" class="select-input">
+                        <option value="">All Categories</option>
+                        <option value="business">Business</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="general">General</option>
+                        <option value="health">Health</option>
+                        <option value="science">Science</option>
+                        <option value="sports">Sports</option>
+                        <option value="technology">Technology</option>
+                    </select>
+                    <button class="search-btn" onclick="searchNews()">Search</button>
+                </div>
+            </div>
+
+            <div class="loading" id="news-loading">
+                <div class="spinner"></div>
+                <p>Loading news articles...</p>
+            </div>
+
+            <div id="articles-container" class="articles-grid">
+                <!-- Articles will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Fake News Detector Tab -->
+        <div id="detector-tab" class="tab-content">
+            <div class="detector-section">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">🤖 AI-Powered Fake News Detection</h2>
+                <p style="text-align: center; margin-bottom: 30px; color: #666;">
+                    Paste any news article below and our advanced machine learning model will analyze it for potential misinformation.
+                </p>
+                
+                <textarea id="article-text" class="text-area" placeholder="Paste your news article here..."></textarea>
+                
+                <button class="analyze-btn" onclick="analyzeArticle()">🔍 Analyze Article</button>
+                
+                <div class="loading" id="analysis-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing article for fake news...</p>
+                </div>
+                
+                <div id="analysis-result" class="result-box"></div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; color: #666; text-align: center;">
+                    <p><strong>Disclaimer:</strong> This tool is for educational purposes only. Always verify news from multiple reliable sources.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 VeriCheck - Empowering informed decisions through technology</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab and activate button
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load news on first visit to news tab
+            if (tabName === 'news' && !document.getElementById('articles-container').hasChildNodes()) {
+                searchNews();
+            }
+        }
+
+        async function searchNews() {
+            const query = document.getElementById('search-query').value;
+            const country = document.getElementById('country-select').value;
+            const category = document.getElementById('category-select').value;
+            
+            // Show loading
+            document.getElementById('news-loading').style.display = 'block';
+            document.getElementById('articles-container').innerHTML = '';
+            
+            try {
+                const params = new URLSearchParams();
+                if (query) params.append('q', query);
+                if (country) params.append('country', country);
+                if (category) params.append('category', category);
+                
+                const response = await fetch(`/api/news?${params}`);
+                const data = await response.json();
+                
+                document.getElementById('news-loading').style.display = 'none';
+                
+                if (response.ok && data.articles) {
+                    loadNews(data.articles);
+                } else {
+                    document.getElementById('articles-container').innerHTML = 
+                        '<p style="text-align: center; color: #666; grid-column: 1/-1;">Error loading news. Please try again.</p>';
+                }
+            } catch (error) {
+                document.getElementById('news-loading').style.display = 'none';
+                document.getElementById('articles-container').innerHTML = 
+                    '<p style="text-align: center; color: #666; grid-column: 1/-1;">Error loading news. Please check your connection.</p>';
+            }
+        }
+
+        function loadNews(articles) {
+            const container = document.getElementById('articles-container');
+            container.innerHTML = '';
+            
+            if (articles.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">No articles found. Try a different search term.</p>';
+                return;
+            }
+            
+            articles.forEach(article => {
+                const articleCard = createArticleCard(article);
+                container.appendChild(articleCard);
+            });
+        }
+
+        function createArticleCard(article) {
+            const card = document.createElement('div');
+            card.className = 'article-card';
+            
+            const publishedDate = new Date(article.publishedAt).toLocaleDateString();
+            const content = article.content || article.description || '';
+            
+            card.innerHTML = `
+                ${article.urlToImage ? `<img src="${article.urlToImage}" alt="Article Image" class="article-image" onerror="this.style.display='none'">` : ''}
+                <div class="article-content">
+                    <div class="article-title">${article.title}</div>
+                    <div class="article-description">${article.description || ''}</div>
+                    <div class="article-source">${article.source.name} • ${publishedDate}</div>
+                    <button class="check-fake-btn" onclick="checkArticleForFake(\`${article.title}\`, \`${content.replace(/`/g, '\\`')}\`)">
+                        Check for Fake News
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function checkArticleForFake(title, content) {
+            // Switch to detector tab
+            switchTab('detector');
+            document.querySelector('.tab-button:nth-child(2)').classList.add('active');
+            document.querySelector('.tab-button:nth-child(1)').classList.remove('active');
+            
+            document.getElementById('article-text').value = title + '\n\n' + content;
+            
+            // Scroll to detector section
+            document.getElementById('detector-tab').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function analyzeArticle() {
+            const articleText = document.getElementById('article-text').value.trim();
+            
+            if (!articleText) {
+                alert('Please enter an article to analyze.');
+                return;
+            }
+            
+            // Hide previous results
+            document.getElementById('analysis-result').style.display = 'none';
+            
+            // Show loading
+            document.getElementById('analysis-loading').style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: articleText })
+                });
+                
+                const result = await response.json();
+                
+                document.getElementById('analysis-loading').style.display = 'none';
+                
+                if (response.ok) {
+                    displayAnalysisResult(result);
+                } else {
+                    alert('Error analyzing article: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                document.getElementById('analysis-loading').style.display = 'none';
+                alert('Error connecting to analysis service. Please try again.');
+            }
+        }
+
+        function displayAnalysisResult(result) {
+            const resultBox = document.getElementById('analysis-result');
+            resultBox.style.display = 'block';
+            
+            if (result.prediction === 'fake') {
+                resultBox.className = 'result-box fake';
+                resultBox.innerHTML = `❌ Potentially Fake News<br><small style="font-size: 0.8em;"></small>`;
+            } else {
+                resultBox.className = 'result-box real';
+                resultBox.innerHTML = `✅ Appears to be Real News<br><small style="font-size: 0.8em;"></small>`;
+            }
+        }
+
+        // Load initial news on page load
+        window.addEventListener('load', () => {
+            searchNews();
+        });
+    </script>
+</body>
+</html>
